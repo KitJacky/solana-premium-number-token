@@ -4,6 +4,7 @@
 Solana Premium Number Token Generator is a powerful tool designed for generating Solana token addresses with customizable prefixes and suffixes. This generator provides flexibility for creating vanity Solana addresses tailored to specific needs. The tool is efficient, user-friendly, and perfect for developers and enthusiasts looking to create unique token addresses.
 
 Powered by [JK Labs](https://3jk.net)
+Tools : (https://sol-pre.3jk.net)
 
 ---
 
@@ -36,8 +37,8 @@ Powered by [JK Labs](https://3jk.net)
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/<your-repo-url>/solana-premium-token-generator.git
-   cd solana-premium-token-generator
+   git clone https://github.com/<your-repo-url>/solana-premium-number-token.git
+   cd solana-premium-number-token
    ```
 
 2. Start the tool:
