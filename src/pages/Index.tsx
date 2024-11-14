@@ -29,6 +29,26 @@ const Index = () => {
 
   const { toast } = useToast();
 
+  const isValidAddress = (address: string, prefix: string, suffix: string, caseSensitive: string): boolean => {
+    if (!prefix && !suffix) return true;
+    
+    const compareStr = caseSensitive === "yes" ? 
+      (s1: string, s2: string) => s1 === s2 :
+      (s1: string, s2: string) => s1.toLowerCase() === s2.toLowerCase();
+    
+    if (prefix) {
+      const addressPrefix = address.slice(0, prefix.length);
+      if (!compareStr(addressPrefix, prefix)) return false;
+    }
+    
+    if (suffix) {
+      const addressSuffix = address.slice(-suffix.length);
+      if (!compareStr(addressSuffix, suffix)) return false;
+    }
+    
+    return true;
+  };
+
   const generateAddress = async () => {
     if (!prefix && !suffix) {
       toast({
@@ -42,7 +62,6 @@ const Index = () => {
     setIsGenerating(true);
     setStats(prev => ({ ...prev, status: "生成中" }));
 
-    // 模擬地址生成過程
     const startTime = Date.now();
     const updateInterval = setInterval(() => {
       const elapsed = (Date.now() - startTime) / 1000;
@@ -56,24 +75,47 @@ const Index = () => {
     }, 100);
 
     try {
-      // 實際的地址生成邏輯將在這裡實現
-      const keypair = Keypair.generate();
-      setTimeout(() => {
-        setGeneratedKeypair(keypair);
-        setIsGenerating(false);
-        clearInterval(updateInterval);
+      let foundKeypair: Keypair | null = null;
+      let attempts = 0;
+      const maxAttempts = 1000000; // 設置最大嘗試次數
+
+      while (!foundKeypair && attempts < maxAttempts) {
+        const keypair = Keypair.generate();
+        const address = keypair.publicKey.toString();
+        
+        if (isValidAddress(address, prefix, suffix, caseSensitive)) {
+          foundKeypair = keypair;
+          break;
+        }
+        
+        attempts++;
+      }
+
+      if (foundKeypair) {
+        setGeneratedKeypair(foundKeypair);
         setStats(prev => ({
           ...prev,
           status: "已完成",
           progress: 100,
         }));
-      }, 2000);
+        toast({
+          title: "成功",
+          description: "已找到符合條件的地址",
+        });
+      } else {
+        toast({
+          title: "錯誤",
+          description: "未能找到符合條件的地址，請重試",
+          variant: "destructive",
+        });
+      }
     } catch (error) {
       toast({
         title: "錯誤",
         description: "生成地址時發生錯誤",
         variant: "destructive",
       });
+    } finally {
       setIsGenerating(false);
       clearInterval(updateInterval);
     }
