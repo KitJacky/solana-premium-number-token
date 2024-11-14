@@ -24,29 +24,29 @@ const GenerationStats = ({
       <div className="grid grid-cols-2 gap-4">
         <div>
           <span className="text-sm text-gray-400">難度</span>
-          <p className="text-lg font-semibold">{difficulty}</p>
+          <p className="text-lg font-semibold text-white">{difficulty}</p>
         </div>
         <div>
           <span className="text-sm text-gray-400">已生成</span>
-          <p className="text-lg font-semibold">{addressesGenerated} 地址</p>
+          <p className="text-lg font-semibold text-white">{addressesGenerated} 地址</p>
         </div>
         <div>
           <span className="text-sm text-gray-400">預估時間</span>
-          <p className="text-lg font-semibold">{estimatedTime}</p>
+          <p className="text-lg font-semibold text-white">{estimatedTime}</p>
         </div>
         <div>
           <span className="text-sm text-gray-400">速度</span>
-          <p className="text-lg font-semibold">{speed} 地址/秒</p>
+          <p className="text-lg font-semibold text-white">{speed} 地址/秒</p>
         </div>
         <div>
           <span className="text-sm text-gray-400">狀態</span>
-          <p className="text-lg font-semibold">{status}</p>
+          <p className="text-lg font-semibold text-white">{status}</p>
         </div>
         <div>
           <span className="text-sm text-gray-400">生成進度</span>
           <div className="mt-2">
             <Progress value={progress} className="h-2 bg-solana-dark" />
-            <span className="text-sm mt-1 inline-block">{progress}%</span>
+            <span className="text-sm mt-1 inline-block text-white">{progress}%</span>
           </div>
         </div>
       </div>
