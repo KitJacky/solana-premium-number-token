@@ -44,6 +44,8 @@ export const useAddressGeneration = () => {
     return true;
   };
 
+  const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
   const generateAddress = async (prefix: string, suffix: string, threads: string, caseSensitive: string) => {
     if (!prefix && !suffix) {
       toast({
@@ -60,9 +62,9 @@ export const useAddressGeneration = () => {
     const startTime = Date.now();
     let totalAddressesGenerated = 0;
     const threadCount = parseInt(threads);
+    const batchSize = 100; // Process in smaller batches
 
     const updateInterval = setInterval(() => {
-      totalAddressesGenerated += (10252 * threadCount);
       const elapsed = (Date.now() - startTime) / 1000;
       const speed = Math.floor(totalAddressesGenerated / elapsed);
       
@@ -70,29 +72,36 @@ export const useAddressGeneration = () => {
         ...prev,
         addressesGenerated: totalAddressesGenerated,
         speed: speed,
-        estimatedTime: "18 分鐘 21 秒",
-        progress: Math.min(Math.floor((elapsed / 2) * 100), 100),
+        estimatedTime: "計算中...",
+        progress: Math.min(Math.floor((totalAddressesGenerated / 1000000) * 100), 100),
       }));
-    }, 100);
+    }, 1000);
 
     try {
       const workers: Promise<Keypair | null>[] = [];
       
       for (let i = 0; i < threadCount; i++) {
         workers.push(
-          new Promise((resolve) => {
+          new Promise(async (resolve) => {
             let attempts = 0;
-            const maxAttempts = 1000000 / threadCount;
-
-            while (attempts < maxAttempts) {
-              const keypair = Keypair.generate();
-              const address = keypair.publicKey.toString();
-              
-              if (isValidAddress(address, prefix, suffix, caseSensitive)) {
-                resolve(keypair);
-                return;
+            
+            while (attempts < 1000000) {
+              // Process in batches with small delays to prevent CPU overload
+              for (let j = 0; j < batchSize; j++) {
+                const keypair = Keypair.generate();
+                const address = keypair.publicKey.toString();
+                
+                totalAddressesGenerated++;
+                
+                if (isValidAddress(address, prefix, suffix, caseSensitive)) {
+                  resolve(keypair);
+                  return;
+                }
+                attempts++;
               }
-              attempts++;
+              
+              // Add small delay between batches to prevent CPU overload
+              await sleep(10);
             }
             resolve(null);
           })
