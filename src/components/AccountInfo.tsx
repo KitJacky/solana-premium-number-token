@@ -38,15 +38,15 @@ const AccountInfo = ({ address }: AccountInfoProps) => {
       
       {isLoading ? (
         <div className="flex items-center justify-center py-4">
-          <Loader2 className="h-6 w-6 animate-spin" />
+          <Loader2 className="h-6 w-6 animate-spin text-white" />
         </div>
       ) : error ? (
         <div className="text-red-400 py-2">{error}</div>
       ) : (
         <div className="space-y-4">
           <div>
-            <span className="text-sm font-medium block mb-2">SOL Balance</span>
-            <div className="bg-solana-dark p-3 rounded-md">
+            <span className="text-sm font-medium block mb-2 text-white">SOL Balance</span>
+            <div className="bg-solana-dark p-3 rounded-md text-white">
               {balance?.toFixed(9)} SOL
             </div>
           </div>

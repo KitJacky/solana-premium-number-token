@@ -26,32 +26,34 @@ const AddressDisplay = ({ keypair }: AddressDisplayProps) => {
       <div className="space-y-4">
         <div>
           <div className="flex justify-between items-center mb-2">
-            <span className="text-sm font-medium">Public Address</span>
+            <span className="text-sm font-medium text-white">Public Address</span>
             <Button
               variant="ghost"
               size="sm"
               onClick={() => copyToClipboard(keypair.publicKey.toString(), "Public address")}
+              className="text-white"
             >
               <Copy className="h-4 w-4" />
             </Button>
           </div>
-          <div className="bg-solana-dark p-3 rounded-md break-all">
+          <div className="bg-solana-dark p-3 rounded-md break-all text-white">
             {keypair.publicKey.toString()}
           </div>
         </div>
 
         <div>
           <div className="flex justify-between items-center mb-2">
-            <span className="text-sm font-medium">Private Key</span>
+            <span className="text-sm font-medium text-white">Private Key</span>
             <Button
               variant="ghost"
               size="sm"
               onClick={() => copyToClipboard(Buffer.from(keypair.secretKey).toString("hex"), "Private key")}
+              className="text-white"
             >
               <Copy className="h-4 w-4" />
             </Button>
           </div>
-          <div className="bg-solana-dark p-3 rounded-md break-all font-mono text-sm">
+          <div className="bg-solana-dark p-3 rounded-md break-all font-mono text-sm text-white">
             {Buffer.from(keypair.secretKey).toString("hex")}
           </div>
         </div>

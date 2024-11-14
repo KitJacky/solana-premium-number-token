@@ -92,33 +92,33 @@ const Index = () => {
             
             <div className="space-y-6">
               <div>
-                <Label>靚號前綴</Label>
+                <Label className="text-white">靚號前綴</Label>
                 <Input
                   placeholder="請輸入前綴"
                   value={prefix}
                   onChange={(e) => setPrefix(e.target.value)}
-                  className="bg-solana-dark border-solana-purple mt-2"
+                  className="bg-solana-dark border-solana-purple mt-2 text-white placeholder:text-gray-400"
                 />
               </div>
 
               <div>
-                <Label>靚號後綴</Label>
+                <Label className="text-white">靚號後綴</Label>
                 <Input
                   placeholder="請輸入後綴"
                   value={suffix}
                   onChange={(e) => setSuffix(e.target.value)}
-                  className="bg-solana-dark border-solana-purple mt-2"
+                  className="bg-solana-dark border-solana-purple mt-2 text-white placeholder:text-gray-400"
                 />
               </div>
 
               <div>
-                <Label>線程數量</Label>
+                <Label className="text-white">線程數量</Label>
                 <div className="flex items-center space-x-4 mt-2">
                   <Button
                     variant="outline"
                     size="icon"
                     onClick={() => setThreads(prev => Math.max(1, parseInt(prev) - 1).toString())}
-                    className="bg-solana-dark"
+                    className="bg-solana-dark text-white"
                   >
                     -
                   </Button>
@@ -126,14 +126,14 @@ const Index = () => {
                     type="number"
                     value={threads}
                     onChange={(e) => setThreads(e.target.value)}
-                    className="w-20 text-center bg-solana-dark border-solana-purple"
+                    className="w-20 text-center bg-solana-dark border-solana-purple text-white"
                     min="1"
                   />
                   <Button
                     variant="outline"
                     size="icon"
                     onClick={() => setThreads(prev => (parseInt(prev) + 1).toString())}
-                    className="bg-solana-dark"
+                    className="bg-solana-dark text-white"
                   >
                     +
                   </Button>
@@ -141,19 +141,19 @@ const Index = () => {
               </div>
 
               <div>
-                <Label>是否區分大小寫</Label>
+                <Label className="text-white">是否區分大小寫</Label>
                 <RadioGroup
                   value={caseSensitive}
                   onValueChange={setCaseSensitive}
-                  className="mt-2"
+                  className="mt-2 text-white"
                 >
                   <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="no" id="no" />
-                    <Label htmlFor="no">否</Label>
+                    <RadioGroupItem value="no" id="no" className="border-white" />
+                    <Label htmlFor="no" className="text-white">否</Label>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="yes" id="yes" />
-                    <Label htmlFor="yes">是</Label>
+                    <RadioGroupItem value="yes" id="yes" className="border-white" />
+                    <Label htmlFor="yes" className="text-white">是</Label>
                   </div>
                 </RadioGroup>
               </div>
@@ -162,7 +162,7 @@ const Index = () => {
                 <Button
                   onClick={generateAddress}
                   disabled={isGenerating}
-                  className="w-full bg-solana-purple hover:bg-solana-purple/90"
+                  className="w-full bg-solana-purple hover:bg-solana-purple/90 text-white"
                 >
                   {isGenerating ? (
                     <>
