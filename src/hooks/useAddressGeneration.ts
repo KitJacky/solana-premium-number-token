@@ -12,18 +12,16 @@ interface GenerationStats {
 }
 
 const calculateDifficulty = (prefix: string, suffix: string): number => {
-  const base = 58; // Base58 encoding for Solana addresses
+  const base = 58;
   
   if (!prefix && !suffix) return 0;
   
   let difficulty = 1;
   
-  // Calculate difficulty for prefix
   if (prefix) {
     difficulty *= Math.pow(base, prefix.length);
   }
   
-  // Calculate difficulty for suffix
   if (suffix) {
     difficulty *= Math.pow(base, suffix.length);
   }
@@ -69,10 +67,10 @@ const useAddressGeneration = () => {
   const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
   const togglePause = () => {
-    setIsPaused(!isPaused);
+    setIsPaused(prev => !prev);
     setStats(prev => ({
       ...prev,
-      status: !isPaused ? "Paused" : "Generating"
+      status: isPaused ? "Generating" : "Paused"
     }));
   };
 
@@ -101,32 +99,36 @@ const useAddressGeneration = () => {
     let totalAddressesGenerated = 0;
     const threadCount = parseInt(threads);
     const batchSize = 100;
+    let shouldContinue = true;
 
     const updateInterval = setInterval(() => {
-      const elapsed = (Date.now() - startTime) / 1000;
-      const speed = Math.floor(totalAddressesGenerated / elapsed);
-      
-      setStats(prev => ({
-        ...prev,
-        addressesGenerated: totalAddressesGenerated,
-        speed: speed,
-        estimatedTime: elapsed < 2 ? "Calculating..." : `${Math.floor(elapsed)} seconds`,
-        progress: Math.min(Math.floor((totalAddressesGenerated / 1000000) * 100), 100),
-      }));
+      if (!isPaused) {
+        const elapsed = (Date.now() - startTime) / 1000;
+        const speed = Math.floor(totalAddressesGenerated / elapsed);
+        
+        setStats(prev => ({
+          ...prev,
+          addressesGenerated: totalAddressesGenerated,
+          speed: speed,
+          estimatedTime: elapsed < 2 ? "Calculating..." : `${Math.floor(elapsed)} seconds`,
+          progress: Math.min(Math.floor((totalAddressesGenerated / 1000000) * 100), 100),
+        }));
+      }
     }, 1000);
 
     const workers = Array.from({ length: threadCount }, async () => {
-      while (true) {
+      while (shouldContinue) {
         if (isPaused) {
           await sleep(100);
           continue;
         }
 
-        for (let i = 0; i < batchSize; i++) {
+        for (let i = 0; i < batchSize && !isPaused && shouldContinue; i++) {
           const keypair = Keypair.generate();
           totalAddressesGenerated++;
           
           if (isValidAddress(keypair.publicKey.toString(), prefix, suffix, caseSensitive)) {
+            shouldContinue = false;
             return keypair;
           }
           
@@ -155,6 +157,7 @@ const useAddressGeneration = () => {
       });
       setStats(prev => ({ ...prev, status: "Failed" }));
     } finally {
+      shouldContinue = false;
       clearInterval(updateInterval);
       setIsGenerating(false);
       setIsPaused(false);
