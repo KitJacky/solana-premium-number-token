@@ -72,10 +72,6 @@ The application is divided into two main parts:
    - Built with **React.js** for an intuitive user interface.
    - Designed for responsiveness and ease of use.
 
-2. **Backend**:
-   - Uses **Node.js** to handle address generation logic.
-   - Implements efficient threading for maximum performance.
-
 ---
 
 ## Contributing
