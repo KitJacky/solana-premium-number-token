@@ -31,18 +31,18 @@ const Index = () => {
     <div className="min-h-screen bg-solana-dark text-white p-8">
       <div className="max-w-4xl mx-auto space-y-8">
         <h1 className="text-4xl font-bold text-center mb-8 bg-gradient-to-r from-solana-green to-solana-purple bg-clip-text text-transparent">
-          Solana 靚號生成器
+          Solana Vanity Address Generator
         </h1>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <Card className="p-6 bg-solana-gray border-none">
-            <h2 className="text-xl font-bold mb-6 text-solana-green">生成設置</h2>
+            <h2 className="text-xl font-bold mb-6 text-solana-green">Generation Settings</h2>
             
             <div className="space-y-6">
               <div>
-                <Label className="text-white">靚號前綴</Label>
+                <Label className="text-white">Vanity Prefix</Label>
                 <Input
-                  placeholder="請輸入前綴"
+                  placeholder="Enter prefix"
                   value={prefix}
                   onChange={(e) => setPrefix(e.target.value)}
                   className="bg-solana-dark border-solana-purple mt-2 text-white placeholder:text-gray-400"
@@ -50,9 +50,9 @@ const Index = () => {
               </div>
 
               <div>
-                <Label className="text-white">靚號後綴</Label>
+                <Label className="text-white">Vanity Suffix</Label>
                 <Input
-                  placeholder="請輸入後綴"
+                  placeholder="Enter suffix"
                   value={suffix}
                   onChange={(e) => setSuffix(e.target.value)}
                   className="bg-solana-dark border-solana-purple mt-2 text-white placeholder:text-gray-400"
@@ -60,7 +60,7 @@ const Index = () => {
               </div>
 
               <div>
-                <Label className="text-white">線程數量</Label>
+                <Label className="text-white">Thread Count</Label>
                 <div className="flex items-center space-x-4 mt-2">
                   <Button
                     variant="outline"
@@ -89,7 +89,7 @@ const Index = () => {
               </div>
 
               <div>
-                <Label className="text-white">是否區分大小寫</Label>
+                <Label className="text-white">Case Sensitive</Label>
                 <RadioGroup
                   value={caseSensitive}
                   onValueChange={setCaseSensitive}
@@ -97,11 +97,11 @@ const Index = () => {
                 >
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="no" id="no" className="border-white" />
-                    <Label htmlFor="no" className="text-white">否</Label>
+                    <Label htmlFor="no" className="text-white">No</Label>
                   </div>
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="yes" id="yes" className="border-white" />
-                    <Label htmlFor="yes" className="text-white">是</Label>
+                    <Label htmlFor="yes" className="text-white">Yes</Label>
                   </div>
                 </RadioGroup>
               </div>
@@ -115,10 +115,10 @@ const Index = () => {
                   {isGenerating ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      生成中...
+                      Generating...
                     </>
                   ) : (
-                    "開始生成"
+                    "Start Generation"
                   )}
                 </Button>
               </div>
