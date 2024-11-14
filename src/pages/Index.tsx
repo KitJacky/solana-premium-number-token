@@ -1,124 +1,30 @@
 import { useState } from "react";
-import { Keypair } from "@solana/web3.js";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import { useToast } from "@/components/ui/use-toast";
 import { Loader2 } from "lucide-react";
 import AddressDisplay from "@/components/AddressDisplay";
 import AccountInfo from "@/components/AccountInfo";
 import GenerationStats from "@/components/GenerationStats";
+import { useAddressGeneration } from "@/hooks/useAddressGeneration";
 
 const Index = () => {
   const [prefix, setPrefix] = useState("");
   const [suffix, setSuffix] = useState("");
   const [threads, setThreads] = useState("1");
   const [caseSensitive, setCaseSensitive] = useState("no");
-  const [generatedKeypair, setGeneratedKeypair] = useState<Keypair | null>(null);
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [stats, setStats] = useState({
-    difficulty: 58,
-    addressesGenerated: 0,
-    estimatedTime: "計算中...",
-    speed: 0,
-    status: "準備中",
-    progress: 0,
-  });
+  
+  const {
+    stats,
+    isGenerating,
+    generatedKeypair,
+    generateAddress,
+  } = useAddressGeneration();
 
-  const { toast } = useToast();
-
-  const isValidAddress = (address: string, prefix: string, suffix: string, caseSensitive: string): boolean => {
-    if (!prefix && !suffix) return true;
-    
-    const compareStr = caseSensitive === "yes" ? 
-      (s1: string, s2: string) => s1 === s2 :
-      (s1: string, s2: string) => s1.toLowerCase() === s2.toLowerCase();
-    
-    if (prefix) {
-      const addressPrefix = address.slice(0, prefix.length);
-      if (!compareStr(addressPrefix, prefix)) return false;
-    }
-    
-    if (suffix) {
-      const addressSuffix = address.slice(-suffix.length);
-      if (!compareStr(addressSuffix, suffix)) return false;
-    }
-    
-    return true;
-  };
-
-  const generateAddress = async () => {
-    if (!prefix && !suffix) {
-      toast({
-        title: "錯誤",
-        description: "請至少輸入前綴或後綴",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setIsGenerating(true);
-    setStats(prev => ({ ...prev, status: "生成中" }));
-
-    const startTime = Date.now();
-    const updateInterval = setInterval(() => {
-      const elapsed = (Date.now() - startTime) / 1000;
-      setStats(prev => ({
-        ...prev,
-        addressesGenerated: Math.floor(elapsed * 10252),
-        speed: 10252,
-        estimatedTime: "18 分鐘 21 秒",
-        progress: Math.min(Math.floor((elapsed / 2) * 100), 100),
-      }));
-    }, 100);
-
-    try {
-      let foundKeypair: Keypair | null = null;
-      let attempts = 0;
-      const maxAttempts = 1000000; // 設置最大嘗試次數
-
-      while (!foundKeypair && attempts < maxAttempts) {
-        const keypair = Keypair.generate();
-        const address = keypair.publicKey.toString();
-        
-        if (isValidAddress(address, prefix, suffix, caseSensitive)) {
-          foundKeypair = keypair;
-          break;
-        }
-        
-        attempts++;
-      }
-
-      if (foundKeypair) {
-        setGeneratedKeypair(foundKeypair);
-        setStats(prev => ({
-          ...prev,
-          status: "已完成",
-          progress: 100,
-        }));
-        toast({
-          title: "成功",
-          description: "已找到符合條件的地址",
-        });
-      } else {
-        toast({
-          title: "錯誤",
-          description: "未能找到符合條件的地址，請重試",
-          variant: "destructive",
-        });
-      }
-    } catch (error) {
-      toast({
-        title: "錯誤",
-        description: "生成地址時發生錯誤",
-        variant: "destructive",
-      });
-    } finally {
-      setIsGenerating(false);
-      clearInterval(updateInterval);
-    }
+  const handleGenerate = () => {
+    generateAddress(prefix, suffix, threads, caseSensitive);
   };
 
   return (
@@ -202,7 +108,7 @@ const Index = () => {
 
               <div className="pt-4">
                 <Button
-                  onClick={generateAddress}
+                  onClick={handleGenerate}
                   disabled={isGenerating}
                   className="w-full bg-solana-purple hover:bg-solana-purple/90 text-white"
                 >
