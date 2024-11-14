@@ -40,7 +40,6 @@ const useAddressGeneration = () => {
   });
 
   const [isGenerating, setIsGenerating] = useState(false);
-  const [isPaused, setIsPaused] = useState(false);
   const [generatedKeypair, setGeneratedKeypair] = useState<Keypair | null>(null);
   const { toast } = useToast();
 
@@ -66,11 +65,11 @@ const useAddressGeneration = () => {
 
   const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
-  const togglePause = () => {
-    setIsPaused(prev => !prev);
+  const stopGeneration = () => {
+    setIsGenerating(false);
     setStats(prev => ({
       ...prev,
-      status: isPaused ? "Generating" : "Paused"
+      status: "Stopped"
     }));
   };
 
@@ -93,7 +92,6 @@ const useAddressGeneration = () => {
 
     setIsGenerating(true);
     setGeneratedKeypair(null);
-    setIsPaused(false);
 
     const startTime = Date.now();
     let totalAddressesGenerated = 0;
@@ -102,7 +100,7 @@ const useAddressGeneration = () => {
     let shouldContinue = true;
 
     const updateInterval = setInterval(() => {
-      if (!isPaused) {
+      if (isGenerating) {
         const elapsed = (Date.now() - startTime) / 1000;
         const speed = Math.floor(totalAddressesGenerated / elapsed);
         
@@ -117,8 +115,8 @@ const useAddressGeneration = () => {
     }, 1000);
 
     const workers = Array.from({ length: threadCount }, async () => {
-      while (shouldContinue && !isPaused) {
-        for (let i = 0; i < batchSize && !isPaused && shouldContinue; i++) {
+      while (shouldContinue && isGenerating) {
+        for (let i = 0; i < batchSize && isGenerating; i++) {
           const keypair = Keypair.generate();
           totalAddressesGenerated++;
           
@@ -127,15 +125,7 @@ const useAddressGeneration = () => {
             return keypair;
           }
           
-          if (isPaused) {
-            break;
-          }
-          
           await sleep(10);
-        }
-        
-        if (isPaused) {
-          await sleep(100);
         }
       }
     });
@@ -163,17 +153,15 @@ const useAddressGeneration = () => {
       shouldContinue = false;
       clearInterval(updateInterval);
       setIsGenerating(false);
-      setIsPaused(false);
     }
   };
 
   return {
     stats,
     isGenerating,
-    isPaused,
     generatedKeypair,
     generateAddress,
-    togglePause,
+    stopGeneration,
   };
 };
 

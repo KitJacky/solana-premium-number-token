@@ -19,10 +19,9 @@ const Index = () => {
   const {
     stats,
     isGenerating,
-    isPaused,
     generatedKeypair,
     generateAddress,
-    togglePause,
+    stopGeneration,
   } = useAddressGeneration();
 
   const handleGenerate = () => {
@@ -111,10 +110,10 @@ const Index = () => {
               <div className="pt-4 flex gap-4">
                 <Button
                   onClick={handleGenerate}
-                  disabled={isGenerating && !isPaused}
+                  disabled={isGenerating}
                   className="flex-1 bg-solana-purple hover:bg-solana-purple/90 text-white"
                 >
-                  {isGenerating && !isPaused ? (
+                  {isGenerating ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                       Generating...
@@ -126,10 +125,10 @@ const Index = () => {
                 
                 {isGenerating && (
                   <Button
-                    onClick={togglePause}
+                    onClick={stopGeneration}
                     className="flex-1 bg-solana-purple hover:bg-solana-purple/90 text-white"
                   >
-                    {isPaused ? "Resume" : "Pause"}
+                    Stop
                   </Button>
                 )}
               </div>
