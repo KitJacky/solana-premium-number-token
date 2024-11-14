@@ -117,12 +117,7 @@ const useAddressGeneration = () => {
     }, 1000);
 
     const workers = Array.from({ length: threadCount }, async () => {
-      while (shouldContinue) {
-        if (isPaused) {
-          await sleep(100);
-          continue;
-        }
-
+      while (shouldContinue && !isPaused) {
         for (let i = 0; i < batchSize && !isPaused && shouldContinue; i++) {
           const keypair = Keypair.generate();
           totalAddressesGenerated++;
@@ -132,7 +127,15 @@ const useAddressGeneration = () => {
             return keypair;
           }
           
+          if (isPaused) {
+            break;
+          }
+          
           await sleep(10);
+        }
+        
+        if (isPaused) {
+          await sleep(100);
         }
       }
     });
