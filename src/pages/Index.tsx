@@ -32,7 +32,7 @@ const Index = () => {
       <div className="max-w-4xl mx-auto space-y-8">
         <div className="flex flex-col items-center space-y-4">
           <img 
-            src="https://jk.hk/jk-logo-2020-w.svg" 
+            src="/jk-logo-2020-w.svg" 
             alt="JK Labs Logo" 
             className="h-12 w-auto"
           />
