@@ -25,9 +25,24 @@ const useAddressGeneration = () => {
   const [generatedKeypair, setGeneratedKeypair] = useState<Keypair | null>(null);
   const { toast } = useToast();
 
-  const isValidAddress = (address: string) => {
-    // Replace with actual address validation logic
-    return address.length > 0; 
+  const isValidAddress = (address: string, prefix: string, suffix: string, caseSensitive: string) => {
+    if (!prefix && !suffix) return true;
+    
+    const compareStr = caseSensitive === "yes" ? 
+      (s1: string, s2: string) => s1 === s2 :
+      (s1: string, s2: string) => s1.toLowerCase() === s2.toLowerCase();
+    
+    if (prefix) {
+      const addressPrefix = address.slice(0, prefix.length);
+      if (!compareStr(addressPrefix, prefix)) return false;
+    }
+    
+    if (suffix) {
+      const addressSuffix = address.slice(-suffix.length);
+      if (!compareStr(addressSuffix, suffix)) return false;
+    }
+    
+    return true;
   };
 
   const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
@@ -59,21 +74,24 @@ const useAddressGeneration = () => {
         ...prev,
         addressesGenerated: totalAddressesGenerated,
         speed: speed,
-        estimatedTime: "Calculating...",
+        estimatedTime: elapsed < 2 ? "Calculating..." : `${Math.floor(elapsed)} seconds`,
         progress: Math.min(Math.floor((totalAddressesGenerated / 1000000) * 100), 100),
       }));
     }, 1000);
 
-    const workers = Array.from({ length: threadCount }, async (_, index) => {
-      // Example generation logic. Replace with actual logic.
-      for (let i = 0; i < batchSize; i++) {
-        totalAddressesGenerated++;
-        if (Math.random() < 0.01) {
-          return Keypair.generate(); // Simulate successful keypair generation
+    const workers = Array.from({ length: threadCount }, async () => {
+      while (true) {
+        for (let i = 0; i < batchSize; i++) {
+          const keypair = Keypair.generate();
+          totalAddressesGenerated++;
+          
+          if (isValidAddress(keypair.publicKey.toString(), prefix, suffix, caseSensitive)) {
+            return keypair;
+          }
+          
+          await sleep(10); // Prevent CPU overload
         }
-        await sleep(10); // Simulate work
       }
-      return null; // Simulate no success in this batch
     });
 
     try {
@@ -86,13 +104,6 @@ const useAddressGeneration = () => {
           title: "Success",
           description: "Address generated successfully",
         });
-      } else {
-        toast({
-          title: "Error",
-          description: "Failed to generate address with given criteria",
-          variant: "destructive",
-        });
-        setStats(prev => ({ ...prev, status: "Failed" }));
       }
     } catch (error) {
       console.error(error);
