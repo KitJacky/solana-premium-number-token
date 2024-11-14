@@ -42,6 +42,7 @@ const useAddressGeneration = () => {
   });
 
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
   const [generatedKeypair, setGeneratedKeypair] = useState<Keypair | null>(null);
   const { toast } = useToast();
 
@@ -67,6 +68,14 @@ const useAddressGeneration = () => {
 
   const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
+  const togglePause = () => {
+    setIsPaused(!isPaused);
+    setStats(prev => ({
+      ...prev,
+      status: !isPaused ? "Paused" : "Generating"
+    }));
+  };
+
   const generateAddress = async (prefix: string, suffix: string, threads: string, caseSensitive: string) => {
     if (!prefix && !suffix) {
       toast({
@@ -77,7 +86,6 @@ const useAddressGeneration = () => {
       return;
     }
 
-    // Calculate and set initial difficulty
     const difficulty = calculateDifficulty(prefix, suffix);
     setStats(prev => ({ 
       ...prev, 
@@ -87,6 +95,7 @@ const useAddressGeneration = () => {
 
     setIsGenerating(true);
     setGeneratedKeypair(null);
+    setIsPaused(false);
 
     const startTime = Date.now();
     let totalAddressesGenerated = 0;
@@ -108,6 +117,11 @@ const useAddressGeneration = () => {
 
     const workers = Array.from({ length: threadCount }, async () => {
       while (true) {
+        if (isPaused) {
+          await sleep(100);
+          continue;
+        }
+
         for (let i = 0; i < batchSize; i++) {
           const keypair = Keypair.generate();
           totalAddressesGenerated++;
@@ -116,7 +130,7 @@ const useAddressGeneration = () => {
             return keypair;
           }
           
-          await sleep(10); // Prevent CPU overload
+          await sleep(10);
         }
       }
     });
@@ -143,14 +157,17 @@ const useAddressGeneration = () => {
     } finally {
       clearInterval(updateInterval);
       setIsGenerating(false);
+      setIsPaused(false);
     }
   };
 
   return {
     stats,
     isGenerating,
+    isPaused,
     generatedKeypair,
     generateAddress,
+    togglePause,
   };
 };
 

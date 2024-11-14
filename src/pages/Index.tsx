@@ -19,8 +19,10 @@ const Index = () => {
   const {
     stats,
     isGenerating,
+    isPaused,
     generatedKeypair,
     generateAddress,
+    togglePause,
   } = useAddressGeneration();
 
   const handleGenerate = () => {
@@ -106,13 +108,13 @@ const Index = () => {
                 </RadioGroup>
               </div>
 
-              <div className="pt-4">
+              <div className="pt-4 flex gap-4">
                 <Button
                   onClick={handleGenerate}
-                  disabled={isGenerating}
-                  className="w-full bg-solana-purple hover:bg-solana-purple/90 text-white"
+                  disabled={isGenerating && !isPaused}
+                  className="flex-1 bg-solana-purple hover:bg-solana-purple/90 text-white"
                 >
-                  {isGenerating ? (
+                  {isGenerating && !isPaused ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                       Generating...
@@ -121,6 +123,15 @@ const Index = () => {
                     "Start Generation"
                   )}
                 </Button>
+                
+                {isGenerating && (
+                  <Button
+                    onClick={togglePause}
+                    className="flex-1 bg-solana-purple hover:bg-solana-purple/90 text-white"
+                  >
+                    {isPaused ? "Resume" : "Pause"}
+                  </Button>
+                )}
               </div>
             </div>
           </Card>
