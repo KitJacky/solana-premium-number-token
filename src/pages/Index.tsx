@@ -30,9 +30,19 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-solana-dark text-white p-8">
       <div className="max-w-4xl mx-auto space-y-8">
-        <h1 className="text-4xl font-bold text-center mb-8 bg-gradient-to-r from-solana-green to-solana-purple bg-clip-text text-transparent">
-          Solana Vanity Address Generator
-        </h1>
+        <div className="flex flex-col items-center space-y-4">
+          <img 
+            src="https://jk.hk/jk-logo-2020-w.svg" 
+            alt="JK Labs Logo" 
+            className="h-12 w-auto"
+          />
+          <h1 className="text-4xl font-bold text-center bg-gradient-to-r from-solana-green to-solana-purple bg-clip-text text-transparent">
+            Solana Premium Number Token Generator
+          </h1>
+          <p className="text-sm text-gray-400">
+            Powered by <a href="https://3jk.net" target="_blank" rel="noopener noreferrer" className="text-solana-purple hover:text-solana-green">JK Labs</a>
+          </p>
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <Card className="p-6 bg-solana-gray border-none">
