@@ -11,9 +11,29 @@ interface GenerationStats {
   progress: number;
 }
 
+const calculateDifficulty = (prefix: string, suffix: string): number => {
+  const base = 58; // Base58 encoding for Solana addresses
+  
+  if (!prefix && !suffix) return 0;
+  
+  let difficulty = 1;
+  
+  // Calculate difficulty for prefix
+  if (prefix) {
+    difficulty *= Math.pow(base, prefix.length);
+  }
+  
+  // Calculate difficulty for suffix
+  if (suffix) {
+    difficulty *= Math.pow(base, suffix.length);
+  }
+  
+  return Math.floor(difficulty);
+};
+
 const useAddressGeneration = () => {
   const [stats, setStats] = useState<GenerationStats>({
-    difficulty: 58,
+    difficulty: 0,
     addressesGenerated: 0,
     estimatedTime: "Calculating...",
     speed: 0,
@@ -57,9 +77,16 @@ const useAddressGeneration = () => {
       return;
     }
 
+    // Calculate and set initial difficulty
+    const difficulty = calculateDifficulty(prefix, suffix);
+    setStats(prev => ({ 
+      ...prev, 
+      difficulty,
+      status: "Generating" 
+    }));
+
     setIsGenerating(true);
     setGeneratedKeypair(null);
-    setStats(prev => ({ ...prev, status: "Generating" }));
 
     const startTime = Date.now();
     let totalAddressesGenerated = 0;
