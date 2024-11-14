@@ -8,7 +8,7 @@ import { Loader2 } from "lucide-react";
 import AddressDisplay from "@/components/AddressDisplay";
 import AccountInfo from "@/components/AccountInfo";
 import GenerationStats from "@/components/GenerationStats";
-import { useAddressGeneration } from "@/hooks/useAddressGeneration";
+import useAddressGeneration from "@/hooks/useAddressGeneration";
 
 const Index = () => {
   const [prefix, setPrefix] = useState("");
